@@ -1,0 +1,12 @@
+<div class="mb-4">
+  <h1 class="display-6 fw-bold">Forex Dashboard</h1>
+  <p class="text-muted mb-0">Major currency pairs with classic pivot levels</p>
+</div>
+
+<div class="masonry">
+  @for (quote of quotes(); track quote.pair) {
+    <div class="masonry-item">
+      <app-forex-pair [quote]="quote" />
+    </div>
+  }
+</div>

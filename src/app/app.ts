@@ -1,24 +1,10 @@
-import { Component, signal, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { LiveDataService } from './service/live-data-service';
-import { FooterComponent } from './layout/footer-component/footer-component';
-import { BannerComponent } from './layout/banner-component/banner-component';
+import { Navbar } from './navbar/navbar';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, BannerComponent, FooterComponent],
+  imports: [RouterOutlet, Navbar],
   templateUrl: './app.html',
-  styleUrl: './app.css'
 })
-export class App implements OnInit {
-  protected readonly title = signal('ng-market-watch');
-
-  constructor(private liveDataService: LiveDataService) {}
-
-  ngOnInit() {
-    
-    this.liveDataService.start();
-    this.liveDataService.prices$.subscribe(data => {
-    });
-  }
-}
+export class App {}

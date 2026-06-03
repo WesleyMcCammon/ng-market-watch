@@ -1,0 +1,154 @@
+<div class="card shadow-sm">
+  <div
+    class="card-header d-flex justify-content-between align-items-center py-2"
+    [ngClass]="quote().percentChange >= 0 ? 'bg-success-subtle' : 'bg-danger-subtle'"
+  >
+    <span class="fw-bold fs-5 font-monospace">{{ quote().pair }}</span>
+    <div class="d-flex gap-2">
+      <span class="badge rounded-pill" [ngClass]="quote().percentChange >= 0 ? 'bg-success' : 'bg-danger'">
+        {{ quote().percentChange >= 0 ? '+' : '' }}{{ quote().percentChange | number: '1.2-2' }}%
+      </span>
+      <span class="badge rounded-pill" [ngClass]="quote().pipChange >= 0 ? 'bg-success' : 'bg-danger'">
+        {{ quote().pipChange >= 0 ? '+' : '' }}{{ quote().pipChange | number: '1.1-1' }} pips
+      </span>
+    </div>
+  </div>
+
+  <div class="card-body p-2">
+    <div class="d-flex justify-content-around text-center mb-2 pb-2 border-bottom">
+      <div>
+        <div class="text-muted small">Bid</div>
+        <div
+          class="fw-semibold font-monospace"
+          [ngClass]="quote().percentChange >= 0 ? 'text-success' : 'text-danger'"
+        >
+          {{ quote().bid | number: priceFormat() }}
+        </div>
+      </div>
+      <div>
+        <div class="text-muted small">Ask</div>
+        <div
+          class="fw-semibold font-monospace"
+          [ngClass]="quote().percentChange >= 0 ? 'text-success' : 'text-danger'"
+        >
+          {{ quote().ask | number: priceFormat() }}
+        </div>
+      </div>
+      <div>
+        <div class="text-muted small">Spread</div>
+        <div class="fw-semibold font-monospace text-secondary">
+          {{ (quote().ask - quote().bid) / quote().pipSize | number: '1.1-1' }}
+        </div>
+      </div>
+    </div>
+
+    <table class="table table-sm table-hover mb-0">
+      <thead>
+        <tr class="text-muted small">
+          <th class="py-1 fw-normal">Level</th>
+          <th class="py-1 fw-normal text-end">Price</th>
+          <th class="py-1 fw-normal text-end">Pips Away</th>
+        </tr>
+      </thead>
+      <tbody class="small">
+        <tr class="table-secondary">
+          <td colspan="3" class="py-1 px-2 fw-semibold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.06em">
+            Pivot Levels
+          </td>
+        </tr>
+        @for (row of pivotRows(); track row.label) {
+          <tr
+            [ngClass]="{
+              'table-warning': row.label === 'Pivot',
+              'text-success': row.label.startsWith('R'),
+              'text-danger': row.label.startsWith('S'),
+            }"
+          >
+            <td class="py-1 fw-semibold">{{ row.label }}</td>
+            <td class="py-1 text-end font-monospace">{{ row.price | number: priceFormat() }}</td>
+            <td
+              class="py-1 text-end font-monospace"
+              [ngClass]="row.diff >= 0 ? 'text-success' : 'text-danger'"
+            >
+              {{ row.diff >= 0 ? '+' : '' }}{{ row.diff | number: '1.1-1' }}
+            </td>
+          </tr>
+        }
+        <tr class="table-secondary">
+          <td colspan="3" class="py-1 px-2 fw-semibold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.06em">
+            Value Area
+          </td>
+        </tr>
+        @for (row of valueAreaRows(); track row.label) {
+          <tr [ngClass]="{ 'table-primary': row.label === 'POC', 'text-info': row.label !== 'POC' }">
+            <td class="py-1 fw-semibold">{{ row.label }}</td>
+            <td class="py-1 text-end font-monospace">{{ row.price | number: priceFormat() }}</td>
+            <td
+              class="py-1 text-end font-monospace"
+              [ngClass]="row.diff >= 0 ? 'text-success' : 'text-danger'"
+            >
+              {{ row.diff >= 0 ? '+' : '' }}{{ row.diff | number: '1.1-1' }}
+            </td>
+          </tr>
+        }
+        <tr class="table-secondary">
+          <td colspan="3" class="py-1 px-2 fw-semibold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.06em">
+            VWAP Bands
+          </td>
+        </tr>
+        @for (row of vwapRows(); track row.label) {
+          <tr
+            [ngClass]="{
+              'table-info': row.label === 'VWAP',
+              'text-success': row.label.startsWith('SD +'),
+              'text-danger': row.label.startsWith('SD -'),
+            }"
+          >
+            <td class="py-1 fw-semibold">{{ row.label }}</td>
+            <td class="py-1 text-end font-monospace">{{ row.price | number: priceFormat() }}</td>
+            <td
+              class="py-1 text-end font-monospace"
+              [ngClass]="row.diff >= 0 ? 'text-success' : 'text-danger'"
+            >
+              {{ row.diff >= 0 ? '+' : '' }}{{ row.diff | number: '1.1-1' }}
+            </td>
+          </tr>
+        }
+        <tr class="table-secondary">
+          <td colspan="3" class="py-1 px-2 fw-semibold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.06em">
+            Prev Day OHLC
+          </td>
+        </tr>
+        @for (row of ohlcRows(); track row.label) {
+          <tr>
+            <td class="py-1 fw-semibold" [ngClass]="row.labelClass">{{ row.label }}</td>
+            <td class="py-1 text-end font-monospace">{{ row.price | number: priceFormat() }}</td>
+            <td
+              class="py-1 text-end font-monospace"
+              [ngClass]="row.diff >= 0 ? 'text-success' : 'text-danger'"
+            >
+              {{ row.diff >= 0 ? '+' : '' }}{{ row.diff | number: '1.1-1' }}
+            </td>
+          </tr>
+        }
+        <tr class="table-secondary">
+          <td colspan="3" class="py-1 px-2 fw-semibold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.06em">
+            Weekly OHLC
+          </td>
+        </tr>
+        @for (row of weeklyOhlcRows(); track row.label) {
+          <tr>
+            <td class="py-1 fw-semibold" [ngClass]="row.labelClass">{{ row.label }}</td>
+            <td class="py-1 text-end font-monospace">{{ row.price | number: priceFormat() }}</td>
+            <td
+              class="py-1 text-end font-monospace"
+              [ngClass]="row.diff >= 0 ? 'text-success' : 'text-danger'"
+            >
+              {{ row.diff >= 0 ? '+' : '' }}{{ row.diff | number: '1.1-1' }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
