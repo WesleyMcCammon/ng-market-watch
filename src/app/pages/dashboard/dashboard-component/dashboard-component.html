@@ -1,0 +1,104 @@
+<div class="container-fluid py-3">
+
+  <div class="masonry-grid">
+
+    <div
+      class="masonry-item"
+      *ngFor="let card of forexCards">
+
+      <div class="card forex-card shadow-sm border-secondary">
+
+        <div class="card-header">
+
+          <div class="d-flex justify-content-between align-items-center">
+
+            <div>
+              <h5 class="mb-0 fw-bold">
+                {{ card.symbol }}
+              </h5>
+
+              <small
+                [class.text-success]="card.change >= 0"
+                [class.text-danger]="card.change < 0">
+
+                {{ card.change >= 0 ? '+' : '' }}{{ card.change }}%
+
+              </small>
+            </div>
+
+            <div class="text-end">
+
+              <div>
+                <span class="text-secondary">Bid:</span>
+                <span class="fw-bold text-info">
+                  {{ card.bid }}
+                </span>
+              </div>
+
+              <div>
+                <span class="text-secondary">Ask:</span>
+                <span class="fw-bold text-warning">
+                  {{ card.ask }}
+                </span>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="card-body">
+
+          <div
+            class="indicator-row"
+            *ngFor="let indicator of card.indicators">
+
+            <div class="d-flex justify-content-between align-items-center mb-2">
+
+              <div>
+
+                <div class="fw-semibold">
+                  {{ indicator.name }}
+                </div>
+
+                <small class="text-secondary">
+                  {{ indicator.value }}
+                </small>
+
+              </div>
+
+              <div
+                class="text-end"
+                [class.text-success]="getDifference(indicator.value, card.bid) > 0"
+                [class.text-danger]="getDifference(indicator.value, card.bid) < 0">
+
+                <div class="fw-bold">
+
+                  {{ getDifference(indicator.value, card.bid) > 0 ? '+' : '' }}
+                  {{ getDifference(indicator.value, card.bid).toFixed(4) }}
+
+                </div>
+
+                <small>
+                  Difference
+                </small>
+
+              </div>
+
+            </div>
+
+            <hr class="my-2" />
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+    
+    
+  </div>
+
+</div>
