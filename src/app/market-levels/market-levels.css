@@ -1,0 +1,13 @@
+.table-responsive {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.badge {
+  font-size: 0.85rem;
+  padding: 0.35rem 0.6rem;
+}

@@ -1,0 +1,144 @@
+<div class="container-fluid py-4">
+  <div class="mb-4">
+    <h1 class="display-6 fw-bold">Market Levels</h1>
+    <p class="text-muted mb-0">All forex pair levels with filtering, sorting, and proximity alerts</p>
+  </div>
+
+  <div class="row g-4">
+    <!-- Left Column: All Levels -->
+    <div class="col-lg-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">All Levels</h5>
+          <small class="text-muted">{{ filteredAndSortedLevels().length }} levels</small>
+        </div>
+
+        <div class="card-body">
+          <div class="row g-2 mb-3">
+            <div class="col-md-6">
+              <label class="form-label small mb-1">Filter by pair</label>
+              <select
+                class="form-select form-select-sm"
+                [value]="filterPair()"
+                (change)="filterPair.set($any($event.target).value)"
+              >
+                <option value="">All pairs</option>
+                @for (pair of pairOptions(); track pair) {
+                  <option [value]="pair">{{ pair }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label small mb-1">Sort by</label>
+              <select
+                class="form-select form-select-sm"
+                [value]="sortBy()"
+                (change)="setSortBy($any($event.target).value)"
+              >
+                <option value="pair">Pair (then label)</option>
+                <option value="diff">Absolute distance from bid</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0">
+              <thead>
+                <tr class="text-muted small bg-light">
+                  <th class="py-2">Pair</th>
+                  <th class="py-2">Group</th>
+                  <th class="py-2">Level</th>
+                  <th class="py-2 text-end">Price</th>
+                  <th class="py-2 text-end">Pips Away</th>
+                </tr>
+              </thead>
+              <tbody class="small">
+                @if (filteredAndSortedLevels().length === 0) {
+                  <tr>
+                    <td colspan="5" class="text-center py-4 text-muted">No levels found</td>
+                  </tr>
+                } @else {
+                  @for (level of filteredAndSortedLevels(); track level.pair + level.label + level.price) {
+                    <tr>
+                      <td class="fw-semibold font-monospace">{{ level.pair }}</td>
+                      <td class="text-muted">{{ level.group }}</td>
+                      <td class="fw-semibold">{{ level.label }}</td>
+                      <td class="text-end font-monospace">{{ level.price | number: getPriceFormat(level.pipSize) }}</td>
+                      <td
+                        class="text-end font-monospace"
+                        [ngClass]="level.diff >= 0 ? 'text-success' : 'text-danger'"
+                      >
+                        {{ level.diff >= 0 ? '+' : '' }}{{ level.diff | number: '1.1-1' }}
+                      </td>
+                    </tr>
+                  }
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Near Levels -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Proximity Alerts</h5>
+          <small class="text-muted">{{ nearLevels().length }} levels</small>
+        </div>
+
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="form-label small mb-2">Threshold (pips)</label>
+            <div class="d-flex gap-2 align-items-center">
+              <input
+                type="range"
+                class="form-range"
+                min="1"
+                max="200"
+                step="1"
+                [value]="thresholdPips()"
+                (change)="thresholdPips.set(+$any($event.target).value)"
+              />
+              <span class="badge bg-primary">{{ thresholdPips() }}</span>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0">
+              <thead>
+                <tr class="text-muted small bg-light">
+                  <th class="py-2">Pair</th>
+                  <th class="py-2">Level</th>
+                  <th class="py-2 text-end">Pips Away</th>
+                </tr>
+              </thead>
+              <tbody class="small">
+                @if (nearLevels().length === 0) {
+                  <tr>
+                    <td colspan="3" class="text-center py-4 text-muted">No levels within {{ thresholdPips() }} pips</td>
+                  </tr>
+                } @else {
+                  @for (level of nearLevels(); track level.pair + level.label + level.price) {
+                    <tr [ngClass]="{ 'table-warning': Math.abs(level.diff) < 10 }">
+                      <td class="fw-semibold font-monospace">{{ level.pair }}</td>
+                      <td class="fw-semibold">{{ level.group }} – {{ level.label }}</td>
+                      <td
+                        class="text-end font-monospace fw-semibold"
+                        [ngClass]="level.diff >= 0 ? 'text-success' : 'text-danger'"
+                      >
+                        {{ level.diff >= 0 ? '+' : '' }}{{ level.diff | number: '1.1-1' }}
+                      </td>
+                    </tr>
+                  }
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
