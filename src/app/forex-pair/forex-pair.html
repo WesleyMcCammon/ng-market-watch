@@ -144,7 +144,10 @@
                 'text-success': row.label.startsWith('R'),
                 'text-danger': row.label.startsWith('S'),
               }">
-            <td class="py-1 fw-semibold">{{ row.group ? row.group + ' – ' : '' }}{{ row.label }}</td>
+            <td class="py-1 fw-semibold">
+              <div>{{ row.label }}</div>
+              <div style="font-size:.8em;">{{ row.group }}</div>
+            </td>
             <td class="py-1 text-end font-monospace">{{ row.price | number: priceFormat() }}</td>
             <td class="py-1 text-end font-monospace" [ngClass]="row.diff >= 0 ? 'text-success' : 'text-danger'">
               {{ row.diff >= 0 ? '+' : '' }}{{ row.diff | number: '1.1-1' }}
