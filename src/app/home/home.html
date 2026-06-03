@@ -3,8 +3,47 @@
   <p class="text-muted mb-0">Major currency pairs with classic pivot levels</p>
 </div>
 
+<div class="row g-2 align-items-center mb-3">
+  <div class="col-auto">
+    <label class="form-label small mb-1" for="filter-type">Filter type</label>
+    <select
+      id="filter-type"
+      class="form-select form-select-sm"
+      [value]="filterType()"
+      (change)="filterType.set($any($event.target).value); selectedCurrency.set('')"
+    >
+      <option value="all">All pairs</option>
+      <option value="base">Base currency</option>
+      <option value="quote">Quote currency</option>
+    </select>
+  </div>
+
+  <div class="col-auto">
+    <label class="form-label small mb-1" for="currency-filter">Currency</label>
+    <select
+      id="currency-filter"
+      class="form-select form-select-sm"
+      [disabled]="filterType() === 'all'"
+      [value]="selectedCurrency()"
+      (change)="selectedCurrency.set($any($event.target).value)"
+    >
+      <option value="">All</option>
+      @for (currency of currencyOptions(); track currency) {
+        <option [value]="currency">{{ currency }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="col-auto ms-auto text-end">
+    <div class="small text-muted">
+      Showing {{ filteredQuotes().length }} of {{ quotes().length }} pairs
+      <span *ngIf="filterType() !== 'all' && selectedCurrency()">(filtered by {{ filterType() }}: {{ selectedCurrency() }})</span>
+    </div>
+  </div>
+</div>
+
 <div class="masonry">
-  @for (quote of quotes(); track quote.pair) {
+  @for (quote of filteredQuotes(); track quote.pair) {
     <div class="masonry-item">
       <app-forex-pair [quote]="quote" />
     </div>
