@@ -1,8 +1,9 @@
-import { Component, computed, input } from '@angular/core';
-import { DecimalPipe, NgClass } from '@angular/common';
+import { Component, computed, input, signal } from '@angular/core';
+import { DecimalPipe, NgClass, NgIf } from '@angular/common';
 import { ForexQuote } from '../forex.service';
 
 export interface PivotRow {
+  id?: string;
   label: string;
   price: number;
   diff: number;
@@ -11,13 +12,30 @@ export interface PivotRow {
 
 @Component({
   selector: 'app-forex-pair',
-  imports: [DecimalPipe, NgClass],
+  imports: [DecimalPipe, NgClass, NgIf],
   templateUrl: './forex-pair.html',
 })
 export class ForexPair {
   readonly quote = input.required<ForexQuote>();
 
+  readonly showGrouped = signal(true);
+
   readonly priceFormat = computed(() => (this.quote().pair.includes('JPY') ? '1.3-3' : '1.5-5'));
+
+  readonly allRows = computed<PivotRow[]>(() => {
+    const rows = [
+      ...this.pivotRows(),
+      ...this.valueAreaRows(),
+      ...this.vwapRows(),
+      ...this.ohlcRows(),
+      ...this.weeklyOhlcRows(),
+    ].map((row, index) => ({
+      ...row,
+      id: `${row.label}-${row.price}-${index}`,
+    }));
+
+    return rows.sort((a, b) => Math.abs(a.diff) - Math.abs(b.diff));
+  });
 
   readonly pivotRows = computed<PivotRow[]>(() => {
     const q = this.quote();
