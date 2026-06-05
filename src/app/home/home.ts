@@ -1,11 +1,11 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ForexPair } from '../forex-pair/forex-pair';
 import { ForexService } from '../forex.service';
-import { NgIf } from '@angular/common';
+import { ForexHubService } from '../forex-hub.service';
 
 @Component({
   selector: 'app-home',
-  imports: [ForexPair, NgIf],
+  imports: [ForexPair],
   templateUrl: './home.html',
   styles: [
     `
@@ -35,7 +35,7 @@ import { NgIf } from '@angular/common';
     `,
   ],
 })
-export class Home {
+export class Home implements OnInit {
   protected readonly quotes = inject(ForexService).quotes;
 
   protected readonly filterType = signal<'all' | 'base' | 'quote'>('all');
@@ -61,4 +61,17 @@ export class Home {
     const index = type === 'base' ? 0 : 1;
     return this.quotes().filter((quote) => quote.pair.split('/')[index] === currency);
   });
+
+
+  readonly hubBid = computed(() => {
+    const latest = this.forexHubService.latest();  
+    console.log('Home component checking latest price update:', latest);
+  });
+
+  constructor(private forexHubService: ForexHubService) {}
+    
+  ngOnInit() {
+    this.forexHubService.connect();
+
+  } 
 }
